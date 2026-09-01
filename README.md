@@ -1,70 +1,62 @@
 # FX Option Risk Pricer
 
-This is a basic Python script that calculates the fair value and risk metrics (delta and vega) for FX options using the Garman-Kohlhagen model. It reads input positions from a CSV file and outputs a timestamped CSV risk report.
+Small production-style CLI for FX option pricing and Greek risk reports. The tool reads position data from CSV, validates inputs, prices each option with the Garman-Kohlhagen model, and writes timestamped CSV reports.
 
-## What It Does
+This project is intentionally compact, but it is structured like an internal platform utility rather than a one-off notebook or ad hoc script.
 
-- Loads FX option positions from a CSV
-- Prices each option using interest rate-adjusted Black-Scholes (Garman-Kohlhagen)
-- Calculates delta and vega for each option
-- Outputs the results to a CSV in the /reports folder
+## What It Shows
 
-## How to Run
+- Python package structure with a console entry point
+- Input validation for market data and position files
+- Garman-Kohlhagen pricing for FX calls and puts
+- Delta, gamma, vega, theta, and notional value output
+- Timestamped report generation for repeatable review
+- Unit tests for pricing and CSV ingestion
+- Dockerfile for repeatable execution
+- GitHub Actions workflow for pull-request validation
 
-1. Install dependencies:
+## Run Locally
 
-   ```bash
-   pip install pandas scipy
-   ```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+pytest -q
+fx-risk-pricer --input data/example_positions.csv --stdout
+```
 
-2. Prepare your input CSV in the `data/` folder (see example below).
+Reports are written to `reports/` by default.
 
-3. Run the script:
+## Run With Docker
 
-   ```bash
-   python fx_risk_dashboard.py
-   ```
+```bash
+docker build -t fx-option-risk-pricer .
+docker run --rm fx-option-risk-pricer
+```
 
-4. Output will be saved in the `reports/` folder with a timestamped filename.
-
-## Sample Input Format
-
-File: `data/example_positions.csv`
+## Input Format
 
 ```csv
-symbol,spot,strike,maturity,r_dom,r_for,vol,type
-EURUSD,1.10,1.15,0.25,0.02,0.01,0.12,call
-USDJPY,135.00,130.00,0.50,0.015,0.005,0.10,put
-GBPUSD,1.25,1.30,0.20,0.018,0.008,0.11,call
+symbol,spot,strike,maturity,r_dom,r_for,vol,type,notional
+EURUSD,1.10,1.15,0.25,0.02,0.01,0.12,call,1000000
+USDJPY,135.00,130.00,0.50,0.015,0.005,0.10,put,500000
 ```
 
-## Output
+## Repository Layout
 
-A CSV file like:
-
-```csv
-symbol,price,delta,vega
-EURUSD,0.0234,0.4412,7.1230
-USDJPY,1.8923,-0.5813,52.0894
-GBPUSD,0.0191,0.4070,6.9951
+```text
+fx_option_risk_pricer/
+  cli.py       Console entry point and report writer
+  io.py        CSV loading and validation
+  models.py    Typed position and result models
+  pricing.py   Garman-Kohlhagen pricing logic
+data/
+  example_positions.csv
+tests/
+  test_io.py
+  test_pricing.py
 ```
 
-## Next Steps (Ideas for Improvement)
+## Resume Positioning
 
-- Build a real-time web dashboard using Streamlit or Dash
-- Add more Greeks (gamma, theta)
-- Load live market data from an API
-- Include a basic backtesting engine for historical PnL
-- Package into a CLI tool or Docker container
-- Add unit tests (pytest) and CI pipeline
-
-## Project Structure
-
-```
-fx-risk-dashboard/
-├── fx_risk_dashboard.py
-├── data/
-│   └── example_positions.csv
-├── reports/
-└── README.txt
-```
+For platform engineering, this is a reusable internal risk utility with packaging, tests, and repeatable execution. For SRE, it demonstrates deterministic batch output, validation, and CI checks around a financial calculation workflow.
