@@ -56,7 +56,3 @@ tests/
   test_io.py
   test_pricing.py
 ```
-
-## Resume Positioning
-
-For platform engineering, this is a reusable internal risk utility with packaging, tests, and repeatable execution. For SRE, it demonstrates deterministic batch output, validation, and CI checks around a financial calculation workflow.
