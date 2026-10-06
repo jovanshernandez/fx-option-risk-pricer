@@ -7,7 +7,7 @@ EXAMPLE = Path(__file__).resolve().parents[1] / "examples" / "positions.csv"
 
 
 def test_report_writes_csvs_and_heatmap(tmp_path: Path, capsys) -> None:
-    code = main(["report", str(EXAMPLE), "--output-dir", str(tmp_path), "--spot-shocks", "-2,0,2", "--vol-shocks", "-1,0,1"])
+    code = main(["report", str(EXAMPLE), "--output-dir", str(tmp_path), "--spot-shocks=-2,0,2", "--vol-shocks=-1,0,1"])
 
     assert code == 0
     out = capsys.readouterr().out
